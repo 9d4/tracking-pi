@@ -15,17 +15,21 @@ newIndustryEl.addEventListener("click", function () {
 
 addPlaceEl.addEventListener("click", function () {
   const stub = `<div class="row mb-2">
+  <div class="col-auto name">
+    <label class="form-label">Nama</label>
+    <input type="text" class="form-control form-control-sm">
+  </div>
   <div class="col-auto latitude">
     <label class="form-label">Latitude</label>
-    <input type="number" class="form-control form-control-sm">
+    <input class="form-control form-control-sm">
   </div>
   <div class="col-auto longitude">
     <label class="form-label">Longitude</label>
-    <input type="number" class="form-control form-control-sm">
+    <input class="form-control form-control-sm">
   </div>
   <div class="col-auto wide">
     <label class="form-label">Wide</label>
-    <input type="number" class="form-control form-control-sm">
+    <input class="form-control form-control-sm">
   </div>
 </div>
 `;
@@ -42,19 +46,26 @@ formNewEl.addEventListener("submit", function (ev) {
 
 formSubmitEl.addEventListener("click", function (ev) {
   let name = document.getElementById("input_name").value;
+  let code = document.getElementById("input_code").value;
   let places = [];
 
   for (let i = 0; i < placesEl.children.length; i++) {
     const placeEl = placesEl.children.item(i);
+    let name = placeEl.querySelector(".name").querySelector("input").value;
     let latitude = placeEl.querySelector(".latitude").querySelector("input").value;
     let longitude = placeEl.querySelector(".longitude").querySelector("input").value;
     let wide = placeEl.querySelector(".wide").querySelector("input").value;
 
-    latitude = parseInt(latitude)
-    longitude = parseInt(longitude)
-    wide = parseInt(wide)
+    if (name === "" || code === "") {
+      continue;
+    }
+
+    latitude = parseFloat(latitude)
+    longitude = parseFloat(longitude)
+    wide = parseFloat(wide)
 
     places.push({
+      name,
       latitude,
       longitude,
       wide
@@ -63,6 +74,7 @@ formSubmitEl.addEventListener("click", function (ev) {
 
   agents.Industries.store({
     name,
+    code,
     places
   }).then(({res, raw}) => {
     if (res === null) {

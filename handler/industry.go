@@ -13,14 +13,13 @@ func HandleStore(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
-	result, err := industry.GetStore().Create(&ind)
+	_, err = industry.GetStore().Create(&ind)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	log.Println(result)
-
+	c.Status(fiber.StatusCreated)
 	return c.JSON(ind)
 }
 

@@ -7,6 +7,7 @@ import (
 
 type Industry struct {
 	Name     string        `bson:"name" json:"name"`
+	Code     string        `bson:"code" json:"code"`
 	Places   []place.Place `bson:"places" json:"places"`
 	Advisers []Adviser     `bson:"advisers" json:"advisers"`
 }
