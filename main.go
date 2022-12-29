@@ -5,6 +5,7 @@ import (
 	"github.com/9d4/tracking-pi/db"
 	"github.com/9d4/tracking-pi/handler"
 	"github.com/9d4/tracking-pi/industry"
+	logg "github.com/9d4/tracking-pi/log"
 	"github.com/9d4/tracking-pi/volunteer"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
@@ -25,6 +26,8 @@ func main() {
 			os.Getenv("ADMIN"): os.Getenv("ADMIN_PASSWORD"),
 		},
 	})
+
+	app.Post("/api/logs", handler.HandleLogsStore)
 
 	app.Group("/admin", basicAuthMw)
 	api := app.Group("/api", basicAuthMw)
@@ -75,4 +78,5 @@ func loadDB() {
 func loadStores() {
 	industry.SetStore(industry.NewStore(db.DB()))
 	volunteer.SetStore(volunteer.NewStore(db.DB()))
+	logg.SetStore(logg.NewStore(db.DB()))
 }

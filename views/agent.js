@@ -38,8 +38,13 @@ const Volunteers = {
   storePhoto: (id, body) => requests.post(`/volunteers/${id}/photo`, body),
 }
 
+const Logs = {
+  store: (body) => requests.post("/logs", body),
+}
+
 const agents = {
   Industries,
+  Logs,
   Volunteers,
 };
 
