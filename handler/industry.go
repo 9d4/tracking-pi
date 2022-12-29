@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func HandleStore(c *fiber.Ctx) error {
+func HandleIndustryStore(c *fiber.Ctx) error {
 	ind := industry.Industry{}
 	err := c.BodyParser(&ind)
 	if err != nil {
@@ -23,7 +23,7 @@ func HandleStore(c *fiber.Ctx) error {
 	return c.JSON(ind)
 }
 
-func HandleIndex(c *fiber.Ctx) error {
+func HandleIndustryIndex(c *fiber.Ctx) error {
 	industries, err := industry.GetStore().GetAll()
 	if err != nil {
 		log.Println(err)

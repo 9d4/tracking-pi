@@ -33,8 +33,14 @@ const Industries = {
   store: (body) => requests.post("/industries", body),
 }
 
+const Volunteers = {
+  store: (body) => requests.post("/volunteers", body),
+  storePhoto: (id, body) => requests.post(`/volunteers/${id}/photo`, body),
+}
+
 const agents = {
   Industries,
+  Volunteers,
 };
 
 export default agents;

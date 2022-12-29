@@ -5,6 +5,7 @@ import (
 	"github.com/9d4/tracking-pi/db"
 	"github.com/9d4/tracking-pi/handler"
 	"github.com/9d4/tracking-pi/industry"
+	"github.com/9d4/tracking-pi/volunteer"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/joho/godotenv"
@@ -28,8 +29,12 @@ func main() {
 	app.Group("/admin", basicAuthMw)
 	api := app.Group("/api", basicAuthMw)
 
-	api.Get("/industries", handler.HandleIndex)
-	api.Post("/industries", handler.HandleStore)
+	api.Get("/industries", handler.HandleIndustryIndex)
+	api.Post("/industries", handler.HandleIndustryStore)
+
+	api.Get("/volunteers", handler.HandleVolunteerIndex)
+	api.Post("/volunteers", handler.HandleVolunteerStore)
+	api.Post("/volunteers/:id/photo", handler.HandleVolunteerStorePhoto)
 
 	app.Static("/", "views/dist/", fiber.Static{
 		Compress:       os.Getenv("DEVELOPMENT") != "true",
@@ -69,4 +74,5 @@ func loadDB() {
 
 func loadStores() {
 	industry.SetStore(industry.NewStore(db.DB()))
+	volunteer.SetStore(volunteer.NewStore(db.DB()))
 }

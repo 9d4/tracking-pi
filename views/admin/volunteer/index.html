@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Management - Volunteer</title>
+</head>
+<body>
+<div class="container py-5">
+    <h1 class="h4">Management - Volunteer</h1>
+    <a href="#" id="link_new">Tambah</a>
+
+    <div class="card my-2 visually-hidden" id="form_new_card">
+        <div class="card-header">
+            Tambah Volunteer
+        </div>
+        <div class="card-body">
+            <form id="form_new">
+                <div class="mb-3">
+                    <label for="input_name" class="form-label">Nama Volunteer</label>
+                    <input type="text" class="form-control" id="input_name">
+                </div>
+                <div class="mb-3">
+                    <label for="input_name" class="form-label">Kode Industry</label>
+                    <input type="text" class="form-control" id="input_code">
+                </div>
+                <div class="mb-3">
+                    <label for="input_photo" class="form-label">Foto</label>
+                    <input class="form-control form-control-sm" id="input_photo" name="photo" type="file">
+                </div>
+
+                <button class="btn btn-sm btn-primary" type="submit" id="btn_submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <div class="card my-2">
+        <div class="card-header">Daftar Volunteer</div>
+        <div class="card-body">
+            <ul class="list-group" id="industry_list"></ul>
+        </div>
+    </div>
+</div>
+
+<script src="./main.js" type="module"></script>
+</body>
+</html>
