@@ -17,6 +17,7 @@ type Store struct {
 func (s *Store) Create(vol *Volunteer) (*mongo.InsertOneResult, error) {
 	doc := bson.D{
 		{"name", vol.Name},
+		{"code", vol.Code},
 		{"industry_code", vol.IndustryCode},
 	}
 

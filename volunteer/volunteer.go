@@ -10,6 +10,7 @@ type Volunteer struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
 
 	*person.Person `bson:",inline"`
+	Code           string `bson:"code" json:"code"`
 	IndustryCode   string `bson:"industry_code" json:"industry_code"`
 
 	ModelPath string

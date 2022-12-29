@@ -36,10 +36,12 @@ photoSelectEl.addEventListener("change", () => {
 formSubmitEl.addEventListener("click", () => {
   let name = document.getElementById("input_name").value;
   let industry_code = document.getElementById("input_code").value;
-  let photo = document.getElementById("input_photo").value;
+  // code is volunteer code
+  let code = document.getElementById("input_code_volunteer").value;
 
   agents.Volunteers.store({
     name,
+    code,
     industry_code
   }).then(({res, raw}) => {
     if (res === null) {
