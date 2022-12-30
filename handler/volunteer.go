@@ -34,6 +34,25 @@ func HandleVolunteerStore(c *fiber.Ctx) error {
 
 	vol.ID = resultID
 
+	//save photo now if available
+	if err := os.MkdirAll(ModelDir, fs.ModeDir|fs.ModePerm); err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	file, err := os.Create(filepath.Join(ModelDir, resultID.Hex()))
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(vol.Photo)
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
 	c.Status(fiber.StatusCreated)
 	return c.JSON(vol)
 }

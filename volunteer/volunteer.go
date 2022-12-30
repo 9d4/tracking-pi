@@ -15,4 +15,6 @@ type Volunteer struct {
 
 	ModelPath string
 	Industry  *industry.Industry `bson:"industry,omitempty" json:"industry,omitempty"`
+
+	Photo string `json:"photo"`
 }
