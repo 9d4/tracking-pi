@@ -1,0 +1,11 @@
+version: '3'
+services:
+  web:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "9501:9501"
+    volumes:
+      - "./data:/app/data"
+    env_file:
+      - .env
