@@ -9,7 +9,15 @@ RUN go get
 RUN go build -o app
 RUN mkdir /app
 RUN cp app /app/
-RUN cp views/dist /app/views/dist
+RUN cp .env /app/
+
+RUN apt install curl
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+RUN apt install nodejs -y
+RUN cd views && npm install && npm run build
+RUN cp -r /build/views /app/
+
+WORKDIR /app
 RUN rm -rf /build
 
 EXPOSE 9501
