@@ -32,6 +32,8 @@ func main() {
 	app.Group("/admin", basicAuthMw)
 	api := app.Group("/api", basicAuthMw)
 
+	api.Get("/triglogs/:id", handler.HandleLogsTrigger)
+
 	api.Get("/industries", handler.HandleIndustryIndex)
 	api.Post("/industries", handler.HandleIndustryStore)
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/hex"
 	logg "github.com/9d4/tracking-pi/log"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,4 +30,25 @@ func HandleLogsStore(c *fiber.Ctx) error {
 
 	c.Status(201)
 	return c.JSON(lo)
+}
+
+func HandleLogsTrigger(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if len(id) != 24 {
+		return fiber.ErrBadRequest
+	}
+
+	idBytes, err := hex.DecodeString(id)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	objectID := primitive.ObjectID{}
+	for i := 0; i < len(objectID); i++ {
+		objectID[i] = idBytes[i]
+	}
+
+	go logg.ProcessLogResult(objectID)
+	c.WriteString("Processing")
+	return nil
 }

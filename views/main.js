@@ -37,8 +37,8 @@ const whereAmI = () => {
 const initWebcam = () => {
   Webcam.reset();
   Webcam.set({
-    width: 320,
-    height: 240,
+    width: 800,
+    height: 450,
     image_format: "jpeg",
     jpeg_quality: 90,
   });

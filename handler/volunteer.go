@@ -39,20 +39,32 @@ func HandleVolunteerStore(c *fiber.Ctx) error {
 }
 
 func HandleVolunteerStorePhoto(c *fiber.Ctx) error {
-	fh, err := c.FormFile("photo")
+	type req struct {
+		Photo string `json:"photo"`
+	}
+	var r req
+	err := c.BodyParser(&r)
 	if err != nil {
-		log.Println(err)
+		return err
+	}
+
+	if c.Params("id") == "" || r.Photo == "" {
 		return fiber.ErrBadRequest
 	}
 
-	path := ModelDir + c.Params("id")
-
-	if err = os.MkdirAll(path, fs.ModeDir|fs.ModePerm); err != nil {
+	if err := os.MkdirAll(ModelDir, fs.ModeDir|fs.ModePerm); err != nil {
 		log.Println(err)
 		return fiber.ErrInternalServerError
 	}
 
-	err = c.SaveFile(fh, filepath.Join(path, fh.Filename))
+	file, err := os.Create(filepath.Join(ModelDir, c.Params("id")))
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(r.Photo)
 	if err != nil {
 		log.Println(err)
 		return fiber.ErrInternalServerError

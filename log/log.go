@@ -1,14 +1,21 @@
 package log
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"github.com/9d4/tracking-pi/industry"
 	"github.com/9d4/tracking-pi/place"
 	"github.com/9d4/tracking-pi/volunteer"
+	"github.com/gofiber/fiber/v2"
 	"github.com/jftuga/geodist"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	ilog "log"
+	"net/http"
+	"net/url"
+	"os"
+	"path/filepath"
 )
 
 type Log struct {
@@ -139,6 +146,11 @@ func ProcessLogResult(logID primitive.ObjectID) {
 	logRes.Volunteer = &vol
 	logRes.Industry = logRes.Volunteer.Industry
 
+	photoMatch := make(chan bool, 1)
+	go func() {
+		ProcessPhoto(vol.ID, log.Photo, photoMatch)
+	}()
+
 	for _, industryPlace := range logRes.Industry.Places {
 		// copy to avoid reference in array
 		ip := industryPlace
@@ -149,6 +161,8 @@ func ProcessLogResult(logID primitive.ObjectID) {
 	}
 
 	// TODO: face matching
+	logRes.FaceMatch = new(bool)
+	*logRes.FaceMatch = <-photoMatch
 
 	filterD := bson.D{{"_id", logID}}
 	updateD := bson.D{
@@ -158,6 +172,7 @@ func ProcessLogResult(logID primitive.ObjectID) {
 				{"volunteer", logRes.Volunteer},
 				{"industry", logRes.Industry},
 				{"places", logRes.Places},
+				{"face_match", logRes.FaceMatch},
 			},
 		},
 	}
@@ -167,4 +182,95 @@ func ProcessLogResult(logID primitive.ObjectID) {
 		ilog.Println(err)
 		return
 	}
+}
+
+const ModelDir = "data/models/"
+
+func ProcessPhoto(volunteerID primitive.ObjectID, targetPhotoB64 string, match chan<- bool) {
+	defer close(match)
+
+	frHost := os.Getenv("FACE_RECOGNITION_URI")
+	if frHost == "" {
+		ilog.Println("FACE_RECOGNITION_URI empty")
+		match <- false
+		return
+	}
+
+	frVerifyUrl, err := url.Parse(frHost)
+	if err != nil {
+		ilog.Println(err)
+		match <- false
+		return
+	}
+	frVerifyUrl = frVerifyUrl.JoinPath("verify")
+
+	basePhoto := filepath.Join(ModelDir, volunteerID.Hex())
+	basePhotoB64, err := os.ReadFile(basePhoto)
+	if err != nil {
+		ilog.Println(err)
+		match <- false
+		return
+	}
+
+	jsonBody := fiber.Map{
+		"model_name": "Facenet",
+		"img": []fiber.Map{
+			fiber.Map{
+				"img1": string(basePhotoB64),
+				"img2": targetPhotoB64,
+			},
+		},
+	}
+	jsonBodyBytes := bytes.Buffer{}
+	if err = json.NewEncoder(&jsonBodyBytes).Encode(jsonBody); err != nil {
+		ilog.Println(err)
+		match <- false
+		return
+	}
+
+	response, err := http.Post(frVerifyUrl.String(), fiber.MIMEApplicationJSON, &jsonBodyBytes)
+	if err != nil {
+		ilog.Println(err)
+		match <- false
+		return
+	}
+
+	//{
+	//	"pair_1": {
+	//		"detector_backend": "opencv",
+	//		"distance": 0.16681972852604476,
+	//		"model": "Facenet",
+	//		"similarity_metric": "cosine",
+	//		"threshold": 0.4,
+	//		"verified": true
+	//	},
+	//	"seconds": 0.421642541885376,
+	//	"trx_id": "b05dbbfa-be3d-4fed-9f09-791b129a04be"
+	//}
+
+	var resData map[string]interface{}
+	if err = json.NewDecoder(response.Body).Decode(&resData); err != nil {
+		ilog.Println(err)
+		match <- false
+		return
+	}
+
+	if response.StatusCode != 200 {
+		match <- false
+		return
+	}
+
+	pair1, ok := resData["pair_1"].(map[string]interface{})
+	if !ok {
+		match <- false
+		return
+	}
+
+	verified, ok := pair1["verified"].(bool)
+	if !ok {
+		match <- false
+		return
+	}
+
+	match <- verified
 }
