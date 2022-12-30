@@ -82,15 +82,13 @@ function check() {
 
 btnSubmit.addEventListener("click", () => {
   let volunteer_code = inputCode.value;
-  let longitude = location.longitude;
-  let latitude = location.latitude;
+  let coordinate = location
   let photo = photoUri;
 
 
   agents.Logs.store({
     volunteer_code,
-    longitude,
-    latitude,
+    coordinate,
     photo,
   }).then(({res, raw}) => {
     if (raw.status !== 201) {

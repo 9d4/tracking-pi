@@ -3,7 +3,9 @@ package log
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 var defaultStore *Store
@@ -18,6 +20,7 @@ func (s *Store) Create(log *Log) (*mongo.InsertOneResult, error) {
 		{"volunteer_code", log.VolunteerCode},
 		{"photo", log.Photo},
 		{"coordinate", log.Coordinate},
+		{"timestamp", primitive.NewDateTimeFromTime(time.Now())},
 	}
 
 	return s.coll.InsertOne(context.TODO(), doc)

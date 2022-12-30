@@ -74,3 +74,7 @@ func SetStore(store *Store) {
 func GetStore() *Store {
 	return defaultStore
 }
+
+func GetCollection() *mongo.Collection {
+	return defaultStore.coll
+}
