@@ -1,1 +1,6 @@
 @import "~bootstrap/scss/bootstrap";
+
+#card_geo {
+  opacity: 1;
+  transition:opacity ease-in-out 1.4s;
+}

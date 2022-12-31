@@ -25,11 +25,13 @@
 
     <div class="card card-body rounded-4 mb-4">
         <div>
-            <label for="input_code" class="form-label fw-bold">Foto</label>
-            <div class="alert alert-primary">Pastikan ada kamu yaaa...</div>
-            <div class="card card-body d-flex align-items-center mx-auto" style="width: fit-content">
-                <div id="camera"></div>
+            <label class="form-label fw-bold d-block">Foto</label>
+            <button class="btn btn-sm btn-primary" id="camera_power">Aktifkan Kamera</button>
+            <div class="d-flex align-items-center mx-auto" style="width: fit-content">
+                <video class="d-none w-100 my-1 rounded-4" id="camera_player" autoplay></video>
+                <canvas class="d-none w-100 my-1 rounded-4" id="canvas" width="320" height="240"></canvas>
             </div>
+            <div class="alert py-1 alert-primary mt-2">Pastikan ada kamu yaaa...</div>
             <div class="d-flex mt-3 justify-content-center">
                 <button class="btn btn-sm me-3" id="btn_reset">Reset</button>
                 <button class="btn btn-sm btn-primary" id="btn_shoot">Ambil Gambar</button>
@@ -37,16 +39,18 @@
         </div>
     </div>
 
-    <div class="visually-hidden" id="card_geo">
-        <div class="alert alert-danger">Izinkan akses lokasi!</div>
+    <div id="card_geo" class="card card-body text-center">
+        <div class="mb-3">Izinkan akses lokasi ya!</div>
+        <div>
+            <button class="btn btn-sm btn-primary" id="btn_get_loc">Dapatkan Lokasiku</button>
+        </div>
     </div>
 
-    <div class="visually-hidden card card-body border-primary rounded-4 mb-4 text-center" id="card_submit">
+    <div class="d-none card card-body border-primary rounded-4 mb-4 text-center" id="card_submit">
         <p>Sepertinya sudah lengkap, Submit yuk</p>
         <button class="btn btn-sm btn-primary" id="btn_submit">Submit</button>
     </div>
 </div>
-<script src="./webcam.js" type="module"></script>
 <script type="module" src="/main.js" defer></script>
 </body>
 </html>

@@ -6,79 +6,89 @@ const cardGeo = document.getElementById("card_geo");
 const inputCode = document.getElementById("input_code");
 const cardSubmit = document.getElementById("card_submit");
 const btnSubmit = document.getElementById("btn_submit");
+const btnGetLoc = document.getElementById("btn_get_loc");
+const camPlayer = document.getElementById('camera_player');
+const camPwrBtn = document.getElementById("camera_power");
+const canvas = document.getElementById('canvas');
+const canvasContext = canvas.getContext('2d');
+
 
 let location = {
-  latitude: 0,
-  longitude: 0,
+  latitude: null,
+  longitude: null,
 }
 let photoUri = null;
 let gotLocation = false;
 
-function success(position) {
-  location.latitude  = position.coords.latitude;
+function onGetlocSuccess(position) {
+  location.latitude = position.coords.latitude;
   location.longitude = position.coords.longitude;
   gotLocation = true;
+  cardGeo.innerHTML =
+    `<div class="text-success">Arigatōgozaimashita</div>`
 
-  cardGeo.classList.add("visually-hidden")
+  cardGeo.classList.add("opacity-0");
+
+  setTimeout(() => {
+    cardGeo.classList.add("invisible");
+  }, 1400);
 }
 
-function error() {
-  cardGeo.classList.remove("visually-hidden")
+function check() {
+  if (inputCode.value !== "" && location.longitude !== null & location.latitude !== null && photoUri != null && gotLocation) {
+    cardSubmit.classList.remove("d-none");
+    return
+  }
+
+  cardSubmit.classList.add("d-none");
 }
 
-const whereAmI = () => {
+function onGetlocError() {
+  cardGeo.innerHTML =
+    `<div class="alert alert-danger mb-0">Waduuh... Kamu tidak memberikan izin padaku. Sepertinya kamu harus meresetku.</div>`
+  cardGeo.classList.remove(["invisible", "opacity-0"]);
+}
+
+function whereAmI() {
   if (!navigator.geolocation) {
-    error();
+    onGetlocError();
   } else {
-    navigator.geolocation.getCurrentPosition(success, error);
+    navigator.geolocation.getCurrentPosition(onGetlocSuccess, onGetlocError);
   }
 }
 
-const initWebcam = () => {
-  Webcam.reset();
-  Webcam.set({
-    width: 800,
-    height: 450,
-    image_format: "jpeg",
-    jpeg_quality: 90,
+camPwrBtn.addEventListener("click", () => {
+  const constraints = {
+    video: true,
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    // Attach the video stream to the video element and autoplay.
+    camPlayer.srcObject = stream;
+    camPlayer.classList.remove("d-none");
+    camPwrBtn.classList.add("d-none");
   });
-  Webcam.attach("#camera");
-}
+
+})
 
 document.addEventListener("DOMContentLoaded", () => {
-  whereAmI();
-  initWebcam();
-  check();
-  setInterval(check, 3000);
+  setInterval(check, 1500);
 });
 
 const btnShoot = document.getElementById("btn_shoot");
 const btnReset = document.getElementById("btn_reset");
 btnShoot.addEventListener("click", () => {
-  Webcam.snap(function (data_uri) {
-    photoUri = data_uri;
-    document.getElementById("camera").innerHTML =
-      `<img src="${data_uri}" id="photo"/>`
-  });
-  check();
+  canvasContext.drawImage(camPlayer, 0, 0, canvas.width, canvas.height);
+  photoUri = canvas.toDataURL("image/jpeg", 100);
+  camPlayer.classList.add("d-none");
+  canvas.classList.remove("d-none");
 });
 
 btnReset.addEventListener("click", () => {
-  initWebcam();
-  check();
+  camPlayer.classList.remove("d-none");
+  canvas.classList.add("d-none");
+  photoUri = null;
 })
-
-function check() {
-  whereAmI();
-  let code = inputCode.value;
-
-  if (!(code !== "" && photoUri !== null && gotLocation)) {
-    cardSubmit.classList.add("visually-hidden");
-    return;
-  }
-
-  cardSubmit.classList.remove("visually-hidden");
-}
 
 btnSubmit.addEventListener("click", () => {
   let volunteer_code = inputCode.value;
@@ -96,10 +106,10 @@ btnSubmit.addEventListener("click", () => {
       return;
     }
 
-    afterSubmit();
+    alert("Terimakasih! Datamu sudah tersimpan, kamu boleh meninggalkan laman ini.");
   })
 })
 
-function afterSubmit() {
-  alert("Terimakasih! Datamu sudah tersimpan, kamu boleh meninggalkan laman ini.");
-}
+btnGetLoc.addEventListener("click", () => {
+  whereAmI();
+})
