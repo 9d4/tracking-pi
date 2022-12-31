@@ -93,6 +93,28 @@ func HandleVolunteerStorePhoto(c *fiber.Ctx) error {
 	return nil
 }
 
+func HandleVolunteerDelete(c *fiber.Ctx) error {
+	type reqDelete struct {
+		IDs []string `json:"ids"`
+	}
+	var req reqDelete
+	err := c.BodyParser(&req)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	log.Println("DELETE:", req)
+
+	result, err := volunteer.GetStore().Delete(req.IDs)
+	if err != nil {
+		log.Println(err)
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(fiber.Map{
+		"n": result.DeletedCount,
+	})
+}
+
 func HandleVolunteerIndex(c *fiber.Ctx) error {
 	vols, err := volunteer.GetStore().GetAll()
 	if err != nil {

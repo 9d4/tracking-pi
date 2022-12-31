@@ -40,6 +40,7 @@ func main() {
 	api.Get("/volunteers", handler.HandleVolunteerIndex)
 	api.Post("/volunteers", handler.HandleVolunteerStore)
 	api.Post("/volunteers/:id/photo", handler.HandleVolunteerStorePhoto)
+	api.Delete("/volunteers", handler.HandleVolunteerDelete)
 
 	app.Static("/", "views/dist/", fiber.Static{
 		Compress:       os.Getenv("DEVELOPMENT") != "true",

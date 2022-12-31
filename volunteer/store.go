@@ -3,6 +3,7 @@ package volunteer
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -58,6 +59,24 @@ func (s *Store) GetAll() ([]Volunteer, error) {
 	}
 
 	return volunteers, nil
+}
+
+func (s *Store) Delete(ids []string) (*mongo.DeleteResult, error) {
+	objectIDs := []primitive.ObjectID{}
+
+	for _, id := range ids {
+		if oid, err := primitive.ObjectIDFromHex(id); err == nil {
+			objectIDs = append(objectIDs, oid)
+		}
+	}
+
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": objectIDs,
+		},
+	}
+
+	return s.coll.DeleteMany(context.TODO(), filter)
 }
 
 func NewStore(db *mongo.Database) *Store {
