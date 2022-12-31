@@ -7,5 +7,27 @@ services:
       - "9501:9501"
     volumes:
       - "./data:/app/data"
-    env_file:
-      - .env
+      - "./tracking-pi:/app/app"
+    env_file: .env
+    restart: always
+
+  mongo:
+    image: mongo:6.0.3
+    restart: always
+    ports:
+      - "9502:27017"
+    env_file: .env.mongo
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "9503:8081"
+    env_file: .env.mongo
+
+  face-recog:
+    build:
+      dockerfile: Dockerfile.face-recog
+    ports:
+      - "9504:5000"
+    restart: always
