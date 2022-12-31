@@ -31,10 +31,10 @@ type Log struct {
 
 // PlaceAccuracy used to compare two coordinates
 type PlaceAccuracy struct {
-	*place.Place `bson:",inline" json:",inline"`
+	place.Place `bson:",inline" json:",inline"`
 
 	// This is coordinate from volunteer's log
-	ToCompare *place.Coordinate `bson:"to_compare" json:"to_compare"`
+	ToCompare place.Coordinate `bson:"to_compare" json:"to_compare"`
 
 	// Result of comparison
 	Distance float64 `bson:"radius" json:"radius"`
@@ -42,7 +42,7 @@ type PlaceAccuracy struct {
 }
 
 func (p *PlaceAccuracy) Calculate() {
-	if p.ToCompare == nil || p.Place == nil {
+	if p.Coordinate == nil {
 		return
 	}
 
@@ -66,7 +66,7 @@ func (p *PlaceAccuracy) Calculate() {
 	}
 }
 
-func NewPlaceAccuracy(center *place.Place, targetCoord *place.Coordinate) *PlaceAccuracy {
+func NewPlaceAccuracy(center place.Place, targetCoord place.Coordinate) *PlaceAccuracy {
 	return &PlaceAccuracy{
 		Place:     center,
 		ToCompare: targetCoord,
@@ -120,6 +120,7 @@ func ProcessLogResult(logID primitive.ObjectID) {
 		{"$group": bson.M{
 			"_id":           "$_id",
 			"name":          bson.M{"$first": "$name"},
+			"code":          bson.M{"$first": "$code"},
 			"industry_code": bson.M{"$first": "$industry_code"},
 			"industry":      bson.M{"$first": "$industries"},
 		}},
@@ -152,10 +153,7 @@ func ProcessLogResult(logID primitive.ObjectID) {
 	}()
 
 	for _, industryPlace := range logRes.Industry.Places {
-		// copy to avoid reference in array
-		ip := industryPlace
-
-		pa := NewPlaceAccuracy(&ip, logRes.Coordinate)
+		pa := NewPlaceAccuracy(industryPlace, *logRes.Coordinate)
 		pa.Calculate()
 		logRes.Places = append(logRes.Places, pa)
 	}
