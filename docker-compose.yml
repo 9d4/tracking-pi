@@ -30,3 +30,12 @@ services:
     ports:
       - "9504:5000"
     restart: always
+
+  appsmith:
+    image: index.docker.io/appsmith/appsmith-ce
+    ports:
+      - "9505:80"
+      - "9506:443"
+    volumes:
+      - ./stacks:/appsmith-stacks
+    restart: always

@@ -2,7 +2,8 @@ FROM python:3.7
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt update && apt install -y cmake
+RUN apt update && apt install -y cmake ffmpeg libsm6 libxext6
+
 RUN python3 -m venv app
 RUN chmod +x app/bin/activate
 RUN app/bin/activate
@@ -12,9 +13,12 @@ WORKDIR /app
 COPY face_recognition/ .
 
 RUN pip install --upgrade pip setuptools && \
-    pip install -r requirements.txt
+    pip install -r requirements.txt && \
+    pip install deepface
 
 EXPOSE 5000
 
-CMD ["uwsgi", "--http", "5000", "--wsgi-file", "api.py", "--callable", "app", "--process", "4", "--threads", "2"]
+RUN pip install gunicorn
+RUN apt install python3-gunicorn -y
 
+CMD ["gunicorn", "-w", "4", "-b", ":5000", "api:app"]
