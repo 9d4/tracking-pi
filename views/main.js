@@ -78,6 +78,9 @@ document.addEventListener("DOMContentLoaded", () => {
 const btnShoot = document.getElementById("btn_shoot");
 const btnReset = document.getElementById("btn_reset");
 btnShoot.addEventListener("click", () => {
+  canvas.height = camPlayer.offsetHeight;
+  canvas.width = camPlayer.offsetWidth;
+
   canvasContext.drawImage(camPlayer, 0, 0, canvas.width, canvas.height);
   photoUri = canvas.toDataURL("image/jpeg", 100);
   camPlayer.classList.add("d-none");
