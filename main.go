@@ -40,6 +40,7 @@ func main() {
 	api.Get("/volunteers", handler.HandleVolunteerIndex)
 	api.Post("/volunteers", handler.HandleVolunteerStore)
 	api.Post("/volunteers/:id/photo", handler.HandleVolunteerStorePhoto)
+	api.Get("/volunteers/:id/photo", handler.HandleVolunteerPhoto)
 	api.Delete("/volunteers", handler.HandleVolunteerDelete)
 
 	app.Static("/", "views/dist/", fiber.Static{

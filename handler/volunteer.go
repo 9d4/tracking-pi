@@ -4,6 +4,7 @@ import (
 	"github.com/9d4/tracking-pi/volunteer"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"io"
 	"io/fs"
 	"log"
 	"os"
@@ -90,6 +91,29 @@ func HandleVolunteerStorePhoto(c *fiber.Ctx) error {
 	}
 
 	c.Status(fiber.StatusCreated)
+	return nil
+}
+
+func HandleVolunteerPhoto(c *fiber.Ctx) error {
+	if c.Params("id") == "" {
+		return fiber.ErrBadRequest
+	}
+
+	path := ModelDir + c.Params("id")
+
+	fileB64, err := os.OpenFile(path, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+	defer fileB64.Close()
+
+	fileBytes, err := io.ReadAll(fileB64)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	c.Write(fileBytes)
+
 	return nil
 }
 
