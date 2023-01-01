@@ -11,6 +11,7 @@ const camPlayer = document.getElementById('camera_player');
 const camPwrBtn = document.getElementById("camera_power");
 const canvas = document.getElementById('canvas');
 const canvasContext = canvas.getContext('2d');
+const btnFlipCam = document.getElementById("btn_flip");
 
 
 let location = {
@@ -91,6 +92,16 @@ btnReset.addEventListener("click", () => {
   camPlayer.classList.remove("d-none");
   canvas.classList.add("d-none");
   photoUri = null;
+})
+
+btnFlipCam.addEventListener("click", () => {
+  if (camPlayer.style.transform === "scaleX(-1)") {
+    camPlayer.style.transform = "scaleX(1)"
+    canvas.style.transform = "scaleX(1)"
+  } else {
+    camPlayer.style.transform = "scaleX(-1)"
+    canvas.style.transform = "scaleX(-1)"
+  }
 })
 
 btnSubmit.addEventListener("click", () => {
