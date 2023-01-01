@@ -4,3 +4,16 @@
   opacity: 1;
   transition:opacity ease-in-out 1.4s;
 }
+
+#sec_main,
+#sec_success {
+  transition:opacity ease-in-out 1.4s;
+}
+
+#sec_main {
+  opacity: 1;
+}
+
+#sec_success{
+  opacity: 0;
+}

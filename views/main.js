@@ -12,6 +12,9 @@ const camPwrBtn = document.getElementById("camera_power");
 const canvas = document.getElementById('canvas');
 const canvasContext = canvas.getContext('2d');
 const btnFlipCam = document.getElementById("btn_flip");
+const cardSuccess = document.getElementById("sec_success");
+const cardMain = document.getElementById("sec_main");
+const btnNew = document.getElementById("btn_new");
 
 
 let location = {
@@ -20,6 +23,7 @@ let location = {
 }
 let photoUri = null;
 let gotLocation = false;
+let cameraActivated = false;
 
 function onGetlocSuccess(position) {
   location.latitude = position.coords.latitude;
@@ -31,12 +35,12 @@ function onGetlocSuccess(position) {
   cardGeo.classList.add("opacity-0");
 
   setTimeout(() => {
-    cardGeo.classList.add("invisible");
+    cardGeo.classList.add("d-none");
   }, 1400);
 }
 
 function check() {
-  if (inputCode.value !== "" && location.longitude !== null & location.latitude !== null && photoUri != null && gotLocation) {
+  if (inputCode.value !== "" && location.longitude !== null & location.latitude !== null && (photoUri != null && cameraActivated) && gotLocation) {
     cardSubmit.classList.remove("d-none");
     return
   }
@@ -68,6 +72,7 @@ camPwrBtn.addEventListener("click", () => {
     camPlayer.srcObject = stream;
     camPlayer.classList.remove("d-none");
     camPwrBtn.classList.add("d-none");
+    cameraActivated = true
   });
 
 })
@@ -120,10 +125,22 @@ btnSubmit.addEventListener("click", () => {
       return;
     }
 
-    alert("Terimakasih! Datamu sudah tersimpan, kamu boleh meninggalkan laman ini.");
+    cardSuccess.classList.remove("d-none");
+    cardSuccess.classList.add("opacity-100");
+    cardMain.classList.add("opacity-0");
+    setTimeout(() => {
+      cardMain.classList.add("d-none");
+    }, 1400);
   })
 })
 
 btnGetLoc.addEventListener("click", () => {
   whereAmI();
+})
+
+btnNew.addEventListener("click", () => {
+  cardSuccess.classList.add("d-none");
+  cardMain.classList.remove("d-none");
+  cardSuccess.classList.add("opacity-0");
+  cardMain.classList.add("opacity-100");
 })
