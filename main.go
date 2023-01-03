@@ -55,6 +55,10 @@ func main() {
 		Next:           nil,
 	})
 
+	go func() {
+		(&logg.Queue{}).Run()
+	}()
+
 	log.Fatal(app.Listen(os.Getenv("ADDRESS")))
 }
 

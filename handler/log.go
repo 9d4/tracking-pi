@@ -25,7 +25,8 @@ func HandleLogsStore(c *fiber.Ctx) error {
 	}
 
 	if objectID, ok := result.InsertedID.(primitive.ObjectID); ok {
-		go logg.ProcessLogResult(objectID)
+		//go logg.ProcessLogResult(objectID)
+		logg.GetQueue().Add(objectID, true)
 	}
 
 	c.Status(201)
